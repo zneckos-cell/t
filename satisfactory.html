@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>Satisfactory Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <nav class="main-menu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+
+      <li class="dropdown">
+        <a href="#">Gaming</a>
+        <ul class="dropdown-menu">
+          <li><a href="satisfactory.html" class="active">Satisfactory</a></li>
+          <li><a href="#">Valheim</a></li>
+          <li><a href="#">Other</a></li>
+        </ul>
+      </li>
+
+      <li><a href="https://app.plex.tv/desktop" target="_blank">Plex</a></li>
+      <li><a href="#">Info</a></li>
+    </ul>
+  </nav>
+</header>
+
+
+<!-- ⭐ Hela kortet med bild + serverinfo -->
+<div class="game-card">
+  <div class="game-card-image satisfactory-image"></div>
+
+  <div class="game-card-content">
+    <h2>Satisfactory Server</h2>
+    <p>
+      Automation, fabriker, logistik och kaos på en främmande planet.  
+      Här hittar du live serverstatus, spelare, ping och länkar.
+    </p>
+
+    <!-- ⭐ Serverstatus inuti kortet -->
+    <div class="server-card">
+      <div class="server-header">
+        <span id="status-dot" class="dot offline"></span>
+        <span id="status-text">Checking...</span>
+      </div>
+
+      <div class="server-info">
+        <p><strong>IP:</strong> 192.168.1.1:1337</p>
+        <p><strong>Players:</strong> <span id="player-count">-</span></p>
+        <p><strong>Map:</strong> <span id="map-name">-</span></p>
+        <p><strong>Ping:</strong> <span id="ping">-</span></p>
+        <p><strong>Uptime:</strong> <span id="uptime">-</span></p>
+      </div>
+
+      <h3>Players Online</h3>
+      <ul id="player-list" class="player-list">
+        <li>Loading...</li>
+      </ul>
+
+      <div class="server-links">
+        <a href="#" target="_blank">Map Viewer</a>
+        <a href="#" target="_blank">Mods</a>
+        <a href="#" target="_blank">Discord</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  async function loadStatus() {
+    const res = await fetch("/.netlify/functions/satisfactory");
+    const data = await res.json();
+
+    const statusEl = document.getElementById("status-text");
+    const playersEl = document.getElementById("player-count");
+    const mapEl = document.getElementById("map-name");
+    const pingEl = document.getElementById("ping");
+    const uptimeEl = document.getElementById("uptime");
+    const playerListEl = document.getElementById("player-list");
+    const statusDot = document.getElementById("status-dot");
+
+    if (!data.online) {
+      statusEl.textContent = "Offline";
+      statusDot.className = "dot offline";
+      playersEl.textContent = "-";
+      mapEl.textContent = "-";
+      pingEl.textContent = "-";
+      uptimeEl.textContent = "-";
+      playerListEl.innerHTML = "<li>Server offline</li>";
+      return;
+    }
+
+    statusEl.textContent = "Online";
+    statusDot.className = "dot online";
+    playersEl.textContent = `${data.players}/${data.maxPlayers}`;
+    mapEl.textContent = data.map || "Unknown";
+    pingEl.textContent = `${data.ping} ms`;
+    uptimeEl.textContent = data.uptime || "N/A";
+
+    playerListEl.innerHTML = "";
+
+    if (!data.playerList || data.playerList.length === 0) {
+      playerListEl.innerHTML = "<li>Inga spelare online</li>";
+    } else {
+      data.playerList.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = p.name;
+        playerListEl.appendChild(li);
+      });
+    }
+  }
+
+  loadStatus();
+  setInterval(loadStatus, 30000);
+</script>
+
+</body>
+</html>
