@@ -1,10 +1,10 @@
-import { query } from "gamedig";
+const Gamedig = require("gamedig");
 
-export async function handler() {
+exports.handler = async () => {
   const start = Date.now();
 
   try {
-    const state = await query({
+    const state = await Gamedig.query({
       type: "satisfactory",
       host: "46.59.68.35",
       port: 8888
@@ -33,4 +33,4 @@ export async function handler() {
       })
     };
   }
-}
+};
