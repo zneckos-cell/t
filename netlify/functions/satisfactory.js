@@ -7,7 +7,7 @@ exports.handler = async () => {
     const state = await Gamedig.query({
       type: "satisfactory",
       host: "46.59.68.35",
-      port: 8888
+      port: 15777
     });
 
     const ping = Date.now() - start;
@@ -34,3 +34,4 @@ exports.handler = async () => {
     };
   }
 };
+
